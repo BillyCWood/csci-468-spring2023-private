@@ -50,7 +50,15 @@ public class CatScriptTokenizer {
             postion++;
 
             while(peek()!='\"' && peek()!='\0'){
-                takeChar();
+
+                if(peek()=='\\'){
+                    takeChar();
+                    if(peek()=='\"'){
+                        takeChar();
+                    }
+                }
+
+                else takeChar();
             }
 
             if(peek() =='\"'){
