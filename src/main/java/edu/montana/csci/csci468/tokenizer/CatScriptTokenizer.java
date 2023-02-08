@@ -49,13 +49,16 @@ public class CatScriptTokenizer {
         if(peek() =='\"'){
             postion++;
 
-            while(isAlphaNumeric(peek())){
+            while(peek()!='\"' && peek()!='\0'){
                 takeChar();
             }
 
             if(peek() =='\"'){
                 postion++;
                 tokenList.addToken(STRING, src.substring(start+1, postion-1), start, postion, line, lineOffset);
+            }
+            else{
+                tokenList.addToken(ERROR, src, start, postion, line, lineOffset);
             }
             return true;
         }else{return false;}
@@ -182,8 +185,10 @@ public class CatScriptTokenizer {
             char c = peek();
             if (c == ' ' || c == '\r' || c == '\t') {
                 postion++;
+                lineOffset++;
                 continue;
             } else if (c == '\n') {
+                lineOffset = 0;
                 postion++;
                 line++;
                 continue;
@@ -218,6 +223,7 @@ public class CatScriptTokenizer {
     private char takeChar() {
         char c = src.charAt(postion);
         postion++;
+        lineOffset++;
         return c;
     }
 
