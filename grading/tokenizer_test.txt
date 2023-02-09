@@ -30,43 +30,15 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running edu.montana.csci.csci468.tokenizer.CatScriptTokenizerTest
-[ERROR] Tests run: 16, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.022 s <<< FAILURE! - in edu.montana.csci.csci468.tokenizer.CatScriptTokenizerTest
-[ERROR] escapedStrings  Time elapsed: 0.013 s  <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <[STRING, EOF]> but was: <[ERROR, STRING, EOF]>
-	at edu.montana.csci.csci468.tokenizer.CatScriptTokenizerTest.escapedStrings(CatScriptTokenizerTest.java:51)
-
-[ERROR] lineOffsetsAreCorrect  Time elapsed: 0.001 s  <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <0> but was: <-1>
-	at edu.montana.csci.csci468.tokenizer.CatScriptTokenizerTest.lineOffsetsAreCorrect(CatScriptTokenizerTest.java:115)
-
-[ERROR] unterminatedStrings  Time elapsed: 0 s  <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <[ERROR, EOF]> but was: <[EOF]>
-	at edu.montana.csci.csci468.tokenizer.CatScriptTokenizerTest.unterminatedStrings(CatScriptTokenizerTest.java:42)
-
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s - in edu.montana.csci.csci468.tokenizer.CatScriptTokenizerTest
 [INFO] 
 [INFO] Results:
 [INFO] 
-[ERROR] Failures: 
-[ERROR]   CatScriptTokenizerTest.escapedStrings:51->CatscriptTestBase.assertTokensAre:63 expected: <[STRING, EOF]> but was: <[ERROR, STRING, EOF]>
-[ERROR]   CatScriptTokenizerTest.lineOffsetsAreCorrect:115 expected: <0> but was: <-1>
-[ERROR]   CatScriptTokenizerTest.unterminatedStrings:42->CatscriptTestBase.assertTokensAre:63 expected: <[ERROR, EOF]> but was: <[EOF]>
-[INFO] 
-[ERROR] Tests run: 16, Failures: 3, Errors: 0, Skipped: 0
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
+[INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  1.702 s
-[INFO] Finished at: 2023-02-08T05:15:58-07:00
+[INFO] Total time:  1.635 s
+[INFO] Finished at: 2023-02-08T17:31:53-07:00
 [INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.1:test (default-test) on project csci-468-spring2022: There are test failures.
-[ERROR] 
-[ERROR] Please refer to /Users/carson/Projects/msu/csci-468-spring2023/grading/scripts/repos/william_wood/target/surefire-reports for the individual test results.
-[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
-[ERROR] -> [Help 1]
-[ERROR] 
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR] 
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
