@@ -51,6 +51,7 @@ public class CatScriptTokenizer {
 
             while(peek()!='\"' && peek()!='\0'){
 
+                //If Escaped Strings are encountered
                 if(peek()=='\\'){
                     takeChar();
                     if(peek()=='\"'){
