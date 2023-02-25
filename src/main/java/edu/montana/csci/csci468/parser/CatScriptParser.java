@@ -85,11 +85,44 @@ public class CatScriptParser {
     //============================================================
 
     private Expression parseExpression() {
-        return parseAdditiveExpression();
+        //parseExpression -> parseEquality -> parseComparison
+        //-> parseAdditive -> parseFactor -> parseUnary -> parsePrimary
+        return parseEqualityExpression();
+    }
+
+    private Expression parseEqualityExpression(){
+        Expression expression = parseComparisonExpression();
+        while (tokens.match(EQUAL_EQUAL, BANG_EQUAL)){
+            Token operator = tokens.consumeToken();
+            final Expression rhs = parseUnaryExpression();
+            EqualityExpression equalityExpression = new EqualityExpression(operator, expression, rhs);
+            equalityExpression.setStart(expression.getStart());
+            equalityExpression.setEnd(rhs.getEnd());
+            expression = equalityExpression;
+
+        }
+        return expression;
+    }
+
+
+
+
+    private Expression parseComparisonExpression(){
+        Expression expression = parseAdditiveExpression();
+        while (tokens.match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)){
+            Token operator = tokens.consumeToken();
+            final Expression rhs = parseUnaryExpression();
+            ComparisonExpression comparisonExpression = new ComparisonExpression(operator, expression, rhs);
+            comparisonExpression.setStart(expression.getStart());
+            comparisonExpression.setEnd(rhs.getEnd());
+            expression = comparisonExpression;
+
+        }
+        return expression;
     }
 
     private Expression parseAdditiveExpression() {
-        Expression expression = parseUnaryExpression();
+        Expression expression = parseFactorExpression();
         while (tokens.match(PLUS, MINUS)) {
             Token operator = tokens.consumeToken();
             final Expression rightHandSide = parseUnaryExpression();
@@ -101,20 +134,26 @@ public class CatScriptParser {
         return expression;
     }
 
+
+    private Expression parseFactorExpression(){
+        Expression expression = parseUnaryExpression();
+        while (tokens.match(STAR, SLASH)){
+            Token operator = tokens.consumeToken();
+            final Expression rhs = parseUnaryExpression();
+            FactorExpression factorExpression = new FactorExpression(operator, expression, rhs);
+            factorExpression.setStart(expression.getStart());
+            factorExpression.setEnd(rhs.getEnd());
+            expression = factorExpression;
+
+        }
+        return expression;
+    }
+
     private Expression parseUnaryExpression() {
         if (tokens.match(MINUS, NOT)) {
             Token token = tokens.consumeToken();
             Expression rhs = parseUnaryExpression();
             UnaryExpression unaryExpression = new UnaryExpression(token, rhs);
-            unaryExpression.setStart(token);
-            unaryExpression.setEnd(rhs.getEnd());
-            return unaryExpression;
-        }
-        //Multiply and Divide
-        else if(tokens.match(STAR, SLASH)){
-            Token token = tokens.consumeToken();
-            Expression rhs = parseExpression();
-            UnaryExpression unaryExpression = new UnaryExpression(token,rhs);
             unaryExpression.setStart(token);
             unaryExpression.setEnd(rhs.getEnd());
             return unaryExpression;
@@ -205,32 +244,21 @@ public class CatScriptParser {
         if(tokens.match(RIGHT_PAREN)){
             tokens.consumeToken();
         }
-        //Unterminated Function Call w/ No Args
-        //TODO
-        else if(tokens.hasMoreTokens() == false && tokens.match(RIGHT_PAREN) == false){
 
+        //get arguments
+        while (tokens.hasMoreTokens() && !tokens.match(RIGHT_PAREN)) {
+            if(!tokens.match(COMMA)) {
+                Expression arg = parsePrimaryExpression();
+                args.add(arg);
+            }
+            else{tokens.matchAndConsume(COMMA);}
         }
-        else {
-            //get arguments
-            while (tokens.hasMoreTokens() && !tokens.match(RIGHT_PAREN)) {
-                if(!tokens.match(COMMA)) {
-                    Expression arg = parsePrimaryExpression();
-                    args.add(arg);
-                }
-                else{tokens.matchAndConsume(COMMA);}
-            }
-            if(tokens.match(RIGHT_PAREN)){
-                tokens.consumeToken();
-            }
-            //Unterminated Function Call w/ Args
-            //TODO
-            else{
 
-            }
 
-        }
         FunctionCallExpression functionCallExpression = new FunctionCallExpression(identifier.getStringValue(), args);
         functionCallExpression.setToken(identifier);
+        functionCallExpression.setEnd(require(RIGHT_PAREN, functionCallExpression, ErrorType.UNTERMINATED_ARG_LIST));
+
         return functionCallExpression;
 
     }
@@ -239,38 +267,27 @@ public class CatScriptParser {
         Token currentToken = tokens.consumeToken();
         List<Expression> elements = new LinkedList<>();
 
-        if(tokens.match(RIGHT_BRACKET)){
+        if(tokens.match(LEFT_BRACKET)){
             currentToken = tokens.consumeToken();
         }
-        else if(tokens.hasMoreTokens()){
-            while(tokens.hasMoreTokens() && !tokens.match(RIGHT_BRACKET)){
-                if(!tokens.match(COMMA)){
+        else if(tokens.hasMoreTokens()) {
+            while (tokens.hasMoreTokens() && !tokens.match(RIGHT_BRACKET)) {
+                if (!tokens.match(COMMA)) {
                     elements.add(parsePrimaryExpression());
+                } else {
+                    currentToken = tokens.consumeToken();
                 }
-                else{
-                    currentToken=tokens.consumeToken();
-                }
             }
-            if(tokens.match(RIGHT_BRACKET)){
-                currentToken = tokens.consumeToken();
-            }
-            //Unterminated List w/ Elements
-            else{
-
-            }
-        }
-        //Unterminated List w/ No Elements
-        else{
-
         }
 
         ListLiteralExpression listLiteralExpression = new ListLiteralExpression(elements);
         listLiteralExpression.setToken(currentToken);
+        listLiteralExpression.setEnd(require(RIGHT_BRACKET,listLiteralExpression,ErrorType.UNTERMINATED_LIST));
+
         return listLiteralExpression;
     }
 
 
-    //private Expression parseListLiteral(){}
 
 
     //============================================================
