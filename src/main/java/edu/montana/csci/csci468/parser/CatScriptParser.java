@@ -7,6 +7,7 @@ import edu.montana.csci.csci468.tokenizer.Token;
 import edu.montana.csci.csci468.tokenizer.TokenList;
 import edu.montana.csci.csci468.tokenizer.TokenType;
 
+import java.awt.image.MemoryImageSource;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -134,7 +135,6 @@ public class CatScriptParser {
         return expression;
     }
 
-
     private Expression parseFactorExpression(){
         Expression expression = parseUnaryExpression();
         while (tokens.match(STAR, SLASH)){
@@ -187,6 +187,9 @@ public class CatScriptParser {
         //List
         else if(tokens.match(LEFT_BRACKET)) {
            return parseListLiteral();
+        }
+        else if(tokens.match(LEFT_PAREN)){
+            return parseAdditiveWithParentheses();
         }
         else {
             SyntaxErrorExpression syntaxErrorExpression = new SyntaxErrorExpression(tokens.consumeToken());
@@ -287,8 +290,14 @@ public class CatScriptParser {
         return listLiteralExpression;
     }
 
-
-
+    private Expression parseAdditiveWithParentheses(){
+        Token currentToken = tokens.consumeToken();
+        Expression expression = parseAdditiveExpression();
+        ParenthesizedExpression parenthesizedExpression = new ParenthesizedExpression(expression);
+        parenthesizedExpression.setToken(currentToken);
+        parenthesizedExpression.setEnd(require(RIGHT_PAREN,parenthesizedExpression));
+        return parenthesizedExpression;
+    }
 
     //============================================================
     //  Parse Helpers
