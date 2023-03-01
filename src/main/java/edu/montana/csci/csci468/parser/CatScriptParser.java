@@ -70,6 +70,10 @@ public class CatScriptParser {
             Statement varStmt = parseVarStatement();
             return varStmt;
         }
+        else if (tokens.match(IDENTIFIER)) {
+            Statement assignStmt = parseAssignmentStatement();
+            return assignStmt;
+        }
 
         return new SyntaxErrorStatement(tokens.consumeToken());
     }
@@ -97,7 +101,20 @@ public class CatScriptParser {
             ForStatement forStatement = new ForStatement();
             List<Statement> stmtList = new LinkedList<>();
             forStatement.setStart(tokens.consumeToken());
-
+            require(LEFT_PAREN, forStatement);
+            forStatement.setVariableName(tokens.consumeToken().getStringValue());
+            require(IN, forStatement);
+            forStatement.setExpression(parseExpression());
+            require(RIGHT_PAREN, forStatement);
+            require(LEFT_BRACE, forStatement);
+            while(tokens.hasMoreTokens()){
+                if(tokens.match(RIGHT_BRACE)){
+                    break;
+                }
+                else{stmtList.add(parseProgramStatement());}
+            }
+            forStatement.setBody(stmtList);
+            forStatement.setEnd(require(RIGHT_BRACE, forStatement));
             return forStatement;
         }else{return null;}
     }
@@ -178,7 +195,15 @@ public class CatScriptParser {
 
 
     private Statement parseAssignmentStatement(){
-        return null;
+        if(tokens.match(IDENTIFIER)){
+            AssignmentStatement assignmentStatement = new AssignmentStatement();
+            assignmentStatement.setVariableName(tokens.getCurrentToken().getStringValue());
+            assignmentStatement.setStart(require(IDENTIFIER, assignmentStatement));
+            require(EQUAL, assignmentStatement);
+            assignmentStatement.setExpression(parseExpression());
+            assignmentStatement.setEnd(tokens.getCurrentToken());
+            return assignmentStatement;
+        }else {return null;}
     }
 
 
