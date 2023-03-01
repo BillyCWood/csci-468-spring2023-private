@@ -58,10 +58,19 @@ public class CatScriptParser {
     //============================================================
 
     private Statement parseProgramStatement() {
-        Statement printStmt = parsePrintStatement();
-        if (printStmt != null) {
+        if(tokens.match(PRINT)) {
+            Statement printStmt = parsePrintStatement();
             return printStmt;
         }
+        else if(tokens.match(FOR)) {
+            Statement forStmt = parseForStatement();
+            return forStmt;
+        }
+        else if (tokens.match(VAR)) {
+            Statement varStmt = parseVarStatement();
+            return varStmt;
+        }
+
         return new SyntaxErrorStatement(tokens.consumeToken());
     }
 
@@ -80,6 +89,117 @@ public class CatScriptParser {
             return null;
         }
     }
+
+
+    private Statement parseForStatement(){
+        if(tokens.match(FOR)){
+
+            ForStatement forStatement = new ForStatement();
+            List<Statement> stmtList = new LinkedList<>();
+            forStatement.setStart(tokens.consumeToken());
+
+            return forStatement;
+        }else{return null;}
+    }
+
+
+
+    private Statement parseIfStatement(){
+        if(tokens.match(IF)){
+            IfStatement ifStatement = new IfStatement();
+            ifStatement.setStart(tokens.consumeToken());
+
+            require(LEFT_PAREN, ifStatement);
+            ifStatement.setExpression(parseExpression());
+            require(RIGHT_PAREN, ifStatement);
+
+            require(LEFT_BRACKET, ifStatement);
+            if(tokens.match(PRINT)){
+            }
+            require(RIGHT_BRACKET, ifStatement);
+
+            return ifStatement;
+
+        }else{return null;}
+    }
+
+/*
+    private Statement parseIfElseStatement(){
+
+    }
+
+
+    private Statement parseElseStatement(){
+
+    }
+
+
+    private Statement parseVarStatement(){
+
+    }
+
+
+*/
+    private Statement parseVarStatement(){
+        if(tokens.match(VAR)){
+
+            VariableStatement variableStatement = new VariableStatement();
+            variableStatement.setStart(tokens.consumeToken());
+            variableStatement.setVariableName(require(IDENTIFIER, variableStatement).getStringValue());
+
+            if(tokens.match(COLON)){
+                tokens.consumeToken();
+                if(tokens.match("int")) {
+                    tokens.consumeToken();
+                    variableStatement.setExplicitType(CatscriptType.INT);
+                }
+                else if(tokens.match("bool")) {
+                    tokens.consumeToken();
+                    variableStatement.setExplicitType(CatscriptType.BOOLEAN);
+                }
+                else if(tokens.match("string")) {
+                    tokens.consumeToken();
+                    variableStatement.setExplicitType(CatscriptType.STRING);
+                }
+                else if(tokens.match("object")) {
+                    tokens.consumeToken();
+                    variableStatement.setExplicitType(CatscriptType.OBJECT);
+                }
+            }
+
+            require(EQUAL, variableStatement);
+            variableStatement.setExpression(parseExpression());
+            variableStatement.setEnd(tokens.getCurrentToken());
+
+            return variableStatement;
+
+        }else{return null;}
+    }
+
+
+    private Statement parseAssignmentStatement(){
+        return null;
+    }
+
+
+
+    private Statement parseFunctionCallStatement(){
+        return null;
+    }
+
+
+
+
+    private Statement parseFunctionDefStatement(){
+        return null;
+    }
+
+
+    private Statement parseReturnStatement(){
+        return null;
+    }
+
+
 
     //============================================================
     //  Expressions
