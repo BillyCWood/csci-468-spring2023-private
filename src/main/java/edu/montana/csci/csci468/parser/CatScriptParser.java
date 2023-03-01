@@ -66,6 +66,10 @@ public class CatScriptParser {
             Statement forStmt = parseForStatement();
             return forStmt;
         }
+        else if (tokens.match(IF)){
+            Statement ifStmt = parseIfStatement();
+            return ifStmt;
+        }
         else if (tokens.match(VAR)) {
             Statement varStmt = parseVarStatement();
             return varStmt;
@@ -124,16 +128,21 @@ public class CatScriptParser {
     private Statement parseIfStatement(){
         if(tokens.match(IF)){
             IfStatement ifStatement = new IfStatement();
+            List<Statement> stmtList = new LinkedList<>();
             ifStatement.setStart(tokens.consumeToken());
-
             require(LEFT_PAREN, ifStatement);
             ifStatement.setExpression(parseExpression());
             require(RIGHT_PAREN, ifStatement);
+            require(LEFT_BRACE, ifStatement);
 
-            require(LEFT_BRACKET, ifStatement);
-            if(tokens.match(PRINT)){
+            while(tokens.hasMoreTokens()){
+                if(tokens.match(RIGHT_BRACE)){
+                    break;
+                }
+                else{stmtList.add(parseProgramStatement());}
             }
-            require(RIGHT_BRACKET, ifStatement);
+            ifStatement.setTrueStatements(stmtList);
+            ifStatement.setEnd(require(RIGHT_BRACE, ifStatement));
 
             return ifStatement;
 
