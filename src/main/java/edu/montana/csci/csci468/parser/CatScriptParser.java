@@ -89,6 +89,10 @@ public class CatScriptParser {
             Statement defFuncStmt = parseFunctionDefStatement();
             return defFuncStmt;
         }
+        else if(tokens.match(RETURN)){
+            Statement retStmt = parseReturnStatement();
+            return retStmt;
+        }
 
         return new SyntaxErrorStatement(tokens.consumeToken());
     }
@@ -173,7 +177,6 @@ public class CatScriptParser {
     }
 
 
-    //TODO Var with List
     private Statement parseVarStatement(){
         if(tokens.match(VAR)){
 
@@ -261,25 +264,33 @@ public class CatScriptParser {
             require(LEFT_PAREN, functionDefinitionStatement);
 
             //PARAMS
+            TypeLiteral type = new TypeLiteral();
             while (!tokens.match(RIGHT_PAREN)){
 
                 //parse arg name
                 Token argName = tokens.consumeToken();
-                TypeLiteral type = null;
 
                 //check if type
                 if(tokens.match(COLON)){
                     //parse type
                     tokens.consumeToken();
+                    type.setType(parseType());
+                    functionDefinitionStatement.addParameter(argName.getStringValue(), type);
+                }else{functionDefinitionStatement.addParameter(argName.getStringValue(), null);}
 
-                }
-                 functionDefinitionStatement.addParameter(argName.getStringValue(), type);
                 //parse comma
                 if(tokens.match(COMMA)){
                     tokens.consumeToken();
                 }
             }
             require(RIGHT_PAREN,functionDefinitionStatement);
+            if(tokens.match(COLON)){
+                type.setType(parseType());
+                functionDefinitionStatement.setType(type);
+            }else{functionDefinitionStatement.setType(null);}
+
+
+
 
 
             //BODY
@@ -298,6 +309,19 @@ public class CatScriptParser {
 
 
     private Statement parseReturnStatement(){
+
+        if(tokens.match(RETURN)){
+
+            ReturnStatement returnStatement = new ReturnStatement();
+            returnStatement.setStart(require(RETURN, returnStatement));
+            while (!tokens.match(RIGHT_BRACE)){
+                returnStatement.setExpression(parseExpression());
+            }
+
+            return returnStatement;
+
+        }
+
         return null;
     }
 
