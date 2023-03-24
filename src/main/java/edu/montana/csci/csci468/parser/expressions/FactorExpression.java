@@ -61,6 +61,7 @@ public class FactorExpression extends Expression {
 
     @Override
     public Object evaluate(CatscriptRuntime runtime) {
+
         return super.evaluate(runtime);
     }
 
