@@ -45,6 +45,9 @@ public class AdditiveExpression extends Expression {
             }
         }
         // TODO handle strings
+        if(getType().equals(CatscriptType.STRING)){
+
+        }
     }
 
     @Override
@@ -75,6 +78,8 @@ public class AdditiveExpression extends Expression {
         } else {
             return lhsValue - rhsValue;
         }
+
+
     }
 
     @Override
