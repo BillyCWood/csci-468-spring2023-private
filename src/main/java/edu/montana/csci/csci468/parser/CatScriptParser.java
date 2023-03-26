@@ -177,6 +177,7 @@ public class CatScriptParser {
             require(RIGHT_BRACE, ifStatement);
             if(tokens.match(ELSE)){
                 List<Statement> elseStmtList = new LinkedList<>();
+                tokens.consumeToken();
                 require(LEFT_BRACE, ifStatement);
                 while(tokens.hasMoreTokens()){
                     if(tokens.match(RIGHT_BRACE)){
@@ -184,6 +185,7 @@ public class CatScriptParser {
                     }
                     else{elseStmtList.add(parseProgramStatement());}
                 }
+                ifStatement.setElseStatements(elseStmtList);
                 require(RIGHT_BRACE, ifStatement);
             }
 

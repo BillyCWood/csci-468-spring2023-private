@@ -6,6 +6,7 @@ import edu.montana.csci.csci468.parser.SymbolTable;
 import edu.montana.csci.csci468.parser.expressions.Expression;
 import edu.montana.csci.csci468.parser.expressions.FunctionCallExpression;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FunctionCallStatement extends Statement {
@@ -32,7 +33,13 @@ public class FunctionCallStatement extends Statement {
     //==============================================================
     @Override
     public void execute(CatscriptRuntime runtime) {
-        super.execute(runtime);
+        FunctionDefinitionStatement function = getProgram().getFunction(getName());
+        List<Object> argumentObjects = new ArrayList<>();
+        for(Expression arg : getArguments()){
+            argumentObjects.add(arg.evaluate(runtime));
+        }
+
+        function.invoke(runtime, argumentObjects);
     }
 
     @Override
