@@ -526,11 +526,6 @@ public class CatScriptParser {
         //arguments list
         List<Expression> args = new LinkedList<>();
 
-        //check if no args
-        if(tokens.match(RIGHT_PAREN)){
-            tokens.consumeToken();
-        }
-
         //get arguments
         while (tokens.hasMoreTokens() && !tokens.match(RIGHT_PAREN)) {
             if(!tokens.match(COMMA)) {
@@ -543,7 +538,8 @@ public class CatScriptParser {
 
         FunctionCallExpression functionCallExpression = new FunctionCallExpression(identifier.getStringValue(), args);
         functionCallExpression.setToken(identifier);
-        functionCallExpression.setEnd(require(RIGHT_PAREN, functionCallExpression, ErrorType.UNTERMINATED_ARG_LIST));
+        require(RIGHT_PAREN, functionCallExpression, ErrorType.UNTERMINATED_ARG_LIST);
+        functionCallExpression.setEnd(tokens.getCurrentToken());
 
         return functionCallExpression;
 
