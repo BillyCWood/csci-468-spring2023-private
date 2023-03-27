@@ -118,10 +118,13 @@ public class CatScriptParser {
         if (tokens.match(PRINT)) {
 
             PrintStatement printStatement = new PrintStatement();
-            printStatement.setStart(tokens.consumeToken());
+            printStatement.setStart(require(PRINT, printStatement));
 
             require(LEFT_PAREN, printStatement);
-            printStatement.setExpression(parseExpression());
+            while (tokens.hasMoreTokens() && !tokens.match(RIGHT_PAREN)){
+                Expression expression = parseExpression();
+                printStatement.setExpression(expression);
+            }
             printStatement.setEnd(require(RIGHT_PAREN, printStatement));
 
             return printStatement;
