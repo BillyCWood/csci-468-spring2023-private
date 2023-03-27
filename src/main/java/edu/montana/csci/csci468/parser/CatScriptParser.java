@@ -534,7 +534,7 @@ public class CatScriptParser {
         //get arguments
         while (tokens.hasMoreTokens() && !tokens.match(RIGHT_PAREN)) {
             if(!tokens.match(COMMA)) {
-                Expression arg = parsePrimaryExpression();
+                Expression arg = parseExpression();
                 args.add(arg);
             }
             else{tokens.matchAndConsume(COMMA);}
