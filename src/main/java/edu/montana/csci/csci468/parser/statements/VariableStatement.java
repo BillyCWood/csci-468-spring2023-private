@@ -73,11 +73,11 @@ public class VariableStatement extends Statement {
     //==============================================================
     @Override
     public void execute(CatscriptRuntime runtime) {
-        //runtime.pushScope();
+        runtime.pushScope();
 
         runtime.setValue(variableName, expression.evaluate(runtime));
 
-        //runtime.popScope();
+        runtime.popScope();
     }
 
     @Override

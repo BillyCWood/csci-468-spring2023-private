@@ -8,6 +8,7 @@ import edu.montana.csci.csci468.parser.ParseError;
 import edu.montana.csci.csci468.parser.SymbolTable;
 import edu.montana.csci.csci468.parser.statements.FunctionDefinitionStatement;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,13 +67,14 @@ public class FunctionCallExpression extends Expression {
 
     @Override
     public Object evaluate(CatscriptRuntime runtime) {
-        LinkedList<Object> lst = new LinkedList<>();
-        for (Expression arg : arguments){
-            // evaluate the value and add to list
-            Object lstValue = arg.evaluate(runtime);
-            lst.add(lstValue);
+        List<Object> objectList = new ArrayList<>();
+
+        for(Expression expression : arguments){
+            objectList.add(expression.evaluate(runtime));
         }
-        return lst;
+
+
+        return objectList;
     }
 
     @Override

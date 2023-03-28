@@ -146,9 +146,7 @@ public class FunctionDefinitionStatement extends Statement {
     //==============================================================
     @Override
     public void execute(CatscriptRuntime runtime) {
-        for(Statement statement : body){
-            statement.execute(runtime);
-        }
+
     }
 
     @Override
