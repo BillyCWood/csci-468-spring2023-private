@@ -71,7 +71,6 @@ public class EqualityExpression extends Expression {
     public void transpile(StringBuilder javascript) {
         super.transpile(javascript);
     }
-
     @Override
     public void compile(ByteCodeGenerator code) {
 
@@ -83,26 +82,23 @@ public class EqualityExpression extends Expression {
         Label setTrue = new Label();
         Label end = new Label();
 
-
         if(isEqual()) {
             code.addMethodInstruction(Opcodes.INVOKESTATIC,
                     ByteCodeGenerator.internalNameFor(Objects.class),
-                    "equals", "(Ljava/lang/Objects;)Ljava/lang/Boolean;");
-        }
-        else{
+                    "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z");
+            code.addJumpInstruction(Opcodes.GOTO, end);
+        }else{
             code.addMethodInstruction(Opcodes.INVOKESTATIC,
                     ByteCodeGenerator.internalNameFor(Objects.class),
-                    "equals", "(Ljava/lang/Objects;)Ljava/lang/Boolean;");
+                    "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z");
         }
 
-
-        code.pushConstantOntoStack(false);
-        code.addJumpInstruction(Opcodes.GOTO,end);
-
         code.addLabel(setTrue);
+        code.addInstruction(Opcodes.POP);
         code.pushConstantOntoStack(true);
 
         code.addLabel(end);
+
     }
 
 
