@@ -99,6 +99,39 @@ public class AdditiveExpression extends Expression {
 
     @Override
     public void compile(ByteCodeGenerator code) {
+
+        //Strings
+        if(getType().equals(CatscriptType.STRING)){
+            //lhs
+            getLeftHandSide().compile(code);
+            box(code, getLeftHandSide().getType());
+
+            //if not string
+            if(!getLeftHandSide().getType().equals(CatscriptType.STRING)){
+                code.addMethodInstruction(Opcodes.INVOKESTATIC, ByteCodeGenerator.internalNameFor(String.class),
+                        "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;");
+            }
+            
+            
+            //rhs
+            getRightHandSide().compile(code);
+            box(code, getRightHandSide().getType());
+
+            //if not string
+            if(!getRightHandSide().getType().equals(CatscriptType.STRING)){
+                code.addMethodInstruction(Opcodes.INVOKESTATIC, ByteCodeGenerator.internalNameFor(String.class),
+                        "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;");
+            }
+
+
+            code.addMethodInstruction(Opcodes.INVOKEVIRTUAL,
+                    ByteCodeGenerator.internalNameFor(String.class),
+                    "concat", "(Ljava/lang/Object;)Ljava/lang/String;");
+
+        }
+
+
+
         getLeftHandSide().compile(code);
         getRightHandSide().compile(code);
         if (isAdd()) {
