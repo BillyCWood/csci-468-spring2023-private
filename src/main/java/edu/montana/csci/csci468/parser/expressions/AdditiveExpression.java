@@ -126,18 +126,18 @@ public class AdditiveExpression extends Expression {
 
             code.addMethodInstruction(Opcodes.INVOKEVIRTUAL,
                     ByteCodeGenerator.internalNameFor(String.class),
-                    "concat", "(Ljava/lang/Object;)Ljava/lang/String;");
+                    "concat", "(Ljava/lang/String;)Ljava/lang/String;");
 
-        }
+        }else {
 
 
-
-        getLeftHandSide().compile(code);
-        getRightHandSide().compile(code);
-        if (isAdd()) {
-            code.addInstruction(Opcodes.IADD);
-        } else {
-            code.addInstruction(Opcodes.ISUB);
+            getLeftHandSide().compile(code);
+            getRightHandSide().compile(code);
+            if (isAdd()) {
+                code.addInstruction(Opcodes.IADD);
+            } else {
+                code.addInstruction(Opcodes.ISUB);
+            }
         }
     }
 
