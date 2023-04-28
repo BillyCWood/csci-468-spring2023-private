@@ -4,6 +4,8 @@ import edu.montana.csci.csci468.bytecode.ByteCodeGenerator;
 import edu.montana.csci.csci468.eval.CatscriptRuntime;
 import edu.montana.csci.csci468.parser.*;
 import edu.montana.csci.csci468.parser.expressions.Expression;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -87,6 +89,32 @@ public class IfStatement extends Statement {
 
     @Override
     public void compile(ByteCodeGenerator code) {
-        super.compile(code);
+
+        Label falseelse = new Label();
+        Label end = new Label();
+
+        getExpression().compile(code);
+
+        //IFEQ(test if 0 aka false)
+        code.addJumpInstruction(Opcodes.IFEQ, falseelse);
+
+        //compile true branch stuff
+        for(Statement stmt : trueStatements){
+            stmt.compile(code);
+        }
+        //jump over false else unconditionally
+        code.addJumpInstruction(Opcodes.GOTO, end);
+
+        code.addLabel(falseelse);
+        //compile false/else branch
+        for(Statement stmt : elseStatements){
+            stmt.compile(code);
+        }
+
+
+        code.addLabel(end);
+
+
+
     }
 }

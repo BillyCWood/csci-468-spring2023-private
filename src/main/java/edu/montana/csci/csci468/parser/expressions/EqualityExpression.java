@@ -92,7 +92,6 @@ public class EqualityExpression extends Expression {
                     ByteCodeGenerator.internalNameFor(Objects.class),
                     "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z");
         }
-
         code.addLabel(setTrue);
         code.addInstruction(Opcodes.POP);
         code.pushConstantOntoStack(true);
