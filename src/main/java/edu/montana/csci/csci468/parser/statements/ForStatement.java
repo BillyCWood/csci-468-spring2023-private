@@ -7,7 +7,11 @@ import edu.montana.csci.csci468.parser.ErrorType;
 import edu.montana.csci.csci468.parser.ParseError;
 import edu.montana.csci.csci468.parser.SymbolTable;
 import edu.montana.csci.csci468.parser.expressions.Expression;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
 
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,7 +96,51 @@ public class ForStatement extends Statement {
 
     @Override
     public void compile(ByteCodeGenerator code) {
-        super.compile(code);
+        
+        Integer iteratorSlot = code.nextLocalStorageSlot();
+        Label forLoopStart = new Label();
+        Label forLoopEnd = new Label();
+
+        expression.compile(code);
+        code.addMethodInstruction(Opcodes.INVOKEINTERFACE,
+                ByteCodeGenerator.internalNameFor(List.class),
+                "iterator", "()Ljava/util/Iterator;");
+        code.addVarInstruction(Opcodes.ASTORE, iteratorSlot);
+
+
+
+        code.addLabel(forLoopStart);
+        code.addVarInstruction(Opcodes.ALOAD, iteratorSlot);
+        code.addMethodInstruction(Opcodes.INVOKEINTERFACE,
+                ByteCodeGenerator.internalNameFor(Iterator.class),
+                "hasNext", "()Z");
+
+
+        code.addJumpInstruction(Opcodes.IFEQ, forLoopEnd);
+
+        code.addMethodInstruction(Opcodes.INVOKEINTERFACE,
+               ByteCodeGenerator.internalNameFor(Iterator.class),
+                "next", "()Ljava/lang/Object;");
+
+        //check cast
+        String loopVariableType = ByteCodeGenerator.internalNameFor(getComponentType().getJavaType());
+        code.addTypeInstruction(Opcodes.CHECKCAST, loopVariableType);
+        unbox(code, getComponentType());
+
+
+        //allocate slot
+        Integer varSlot = code.createLocalStorageSlotFor(variableName);
+        if(getComponentType().equals(CatscriptType.INT) || getComponentType().equals(CatscriptType.BOOLEAN)){
+            code.addVarInstruction(Opcodes.ISTORE, varSlot);
+        }else{code.addVarInstruction(Opcodes.ASTORE, varSlot);}
+
+
+        for(Statement statement : getBody()){statement.compile(code);}
+
+        code.addJumpInstruction(Opcodes.GOTO, forLoopStart);
+        code.addLabel(forLoopEnd);
+
+
     }
 
 }
